@@ -20,7 +20,7 @@ const ScreenWrapper = ({ children }) => {
 
 
   return (
-      <ImageBackground source={{uri: imageUri}} resizeMode='contain' style={{flex:1}}>
+      <ImageBackground source={imageUri === null ? require('../../assets/default.png'): {uri: imageUri}} resizeMode='contain' style={{flex:1}}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}>
         <ScrollView style={[styles.screen, {}]} showsVerticalScrollIndicator={false}>

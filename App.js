@@ -31,7 +31,7 @@ export default function App() {
     }, []);
 
   return (
-    <ImageBackground source={{uri: imageUri}} resizeMode='cover' style={{flex:1}}>
+    <ImageBackground source={imageUri === null ? require('./assets/default.png'): {uri: imageUri}} resizeMode='cover' style={{flex:1}}>
       <SafeAreaView style={{flex:1}}>
       <NavigationContainer>
         <Tab.Navigator
