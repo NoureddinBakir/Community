@@ -1,15 +1,17 @@
-import React, {useEffect, useState} from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, ImageBackground } from 'react-native';
+import React, {useEffect, useState, useCallback} from 'react';
+import { View, Text, TouchableOpacity, Button, SafeAreaView, ImageBackground } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {FileSystem} from 'expo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //import local files
 import {colors, styles, fontSizes, fontWeights} from './components/styles.js';
 import backgroundImage from './images';
 import {getCachedUri} from './GetCachedUri';
+
 
 // import Screen files
 import {HomeScreen} from './screens/HomeScreen';
@@ -19,19 +21,48 @@ import CheckinScreen from './screens/CheckinScreen';
 
 const Tab = createBottomTabNavigator();
 
+
+
 export default function App() {
 
-  const [imageUri, setImageUri] = useState(null);
-  
-    useEffect(()=>{
-      setImageUri('https://reactjs.org/logo-og.png');
-      getCachedUri(imageUri)
-      .then(res => setImageUri(res))
-      .catch(err => console.log(err));
-    }, []);
+  const [imageUri, setImageUri] = useState('./assets/default.png');
+  const [authStatus, setAuthStatus] = useState("false");
+
+  const storeData = async (value) => {
+    try {
+      await AsyncStorage.setItem('authStatusKey', value);
+      setAuthStatus(value);
+    } catch (e) {
+      // saving error
+    }
+  };
+
+
+  const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('authStatusKey');
+      if(value !== null) {
+        setAuthStatus(value);
+      }
+    } catch(e) {
+      // error reading value
+    }
+  }
+
+
+  useEffect(()=>{
+    setImageUri('https://reactjs.org/logo-og.png');
+    getCachedUri(imageUri)
+    .then(res => setImageUri(res))
+    .catch(err => console.log(err));
+
+    getData();
+  }, []);
 
   return (
-    <ImageBackground source={imageUri === null ? require('./assets/default.png'): {uri: imageUri}} resizeMode='cover' style={{flex:1}}>
+    authStatus == "false" ? (
+
+    <ImageBackground source={{uri: imageUri}} resizeMode='cover' style={{flex:1}}>
       <SafeAreaView style={{flex:1}}>
       <NavigationContainer>
         <Tab.Navigator
@@ -66,5 +97,12 @@ export default function App() {
       </NavigationContainer>
       </SafeAreaView>
     </ImageBackground>
+
+    ):(
+      <View>
+      <Text>It Worked {authStatus}</Text>
+      <Button onPress={() => {storeData("false")}} text="Sign Out"/>
+      </View>
+    )
   );
 }

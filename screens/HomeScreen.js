@@ -13,9 +13,6 @@ import ProfileGroup from '../components/groups/ProfileGroup.js';
 
 export const HomeScreen = () => {
 
-    const windowWidth = Dimensions.get('window').width;
-    const windowHeight = Dimensions.get('window').height;
-
     return (
       <ScreenWrapper>
 
